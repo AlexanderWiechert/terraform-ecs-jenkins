@@ -11,8 +11,7 @@ resource "aws_security_group" "ec2" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-    cidr_blocks = [
-    "0.0.0.0/0"]
+    cidr_blocks = [aws_subnet.jenkins.*.cidr_block]
   }
 
   ingress {
@@ -29,11 +28,11 @@ resource "aws_security_group" "ec2" {
     security_groups = [aws_security_group.jenkins_alb.arn]
   }
 
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    cidr_blocks = [
-    "0.0.0.0/0"]
-  }
+#  egress {
+#    from_port = 0
+#    to_port   = 0
+#    protocol  = "-1"
+#    cidr_blocks = [
+#    "0.0.0.0/0"]
+#  }
 }

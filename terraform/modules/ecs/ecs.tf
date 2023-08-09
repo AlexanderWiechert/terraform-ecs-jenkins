@@ -102,5 +102,5 @@ resource "aws_cloudwatch_log_group" "mb" {
 }
 
 resource "aws_kms_key" "jenkins" {
-  description             = "cloudwatch_encrpytion"
+  description             = "cloudwatch-encrpytion"
 }
