@@ -4,6 +4,7 @@ locals {
 
 resource "aws_security_group" "jenkins_alb" {
   name   = "${var.ecs_cluster_name}-alb"
+  description = "teh security group for the jenkins alb"
   vpc_id = aws_vpc.jenkins.id
 
   ingress {
@@ -13,25 +14,12 @@ resource "aws_security_group" "jenkins_alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 80
-    protocol    = "tcp"
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 50000
-    protocol    = "tcp"
-    to_port     = 50000
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    protocol    = "-1"
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#  egress {
+#    from_port   = 0
+#    protocol    = "-1"
+#    to_port     = 0
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
 
   # tags = {
   #   Name = "${var.service_name}-allow-http"
@@ -44,7 +32,7 @@ resource "aws_alb" "jenkins" {
   load_balancer_type = "application"
   security_groups    = ["${aws_security_group.jenkins_alb.id}"]
   subnets            = aws_subnet.jenkins.*.id
-
+  drop_invalid_header_fields = true
   tags = {
     Name = var.ecs_cluster_name
   }
