@@ -83,7 +83,9 @@ resource "aws_launch_configuration" "jenkins" {
   key_name                    = var.key_name
   associate_public_ip_address = false
   user_data                   = data.template_file.user_data.rendered
-  root_block_device.encrypted = true
+  root_block_device{
+    encrypted = true
+  }
   lifecycle {
     create_before_destroy = true
   }
