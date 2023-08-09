@@ -12,6 +12,10 @@ data "template_file" "jenkins_task_template" {
 
 resource "aws_ecs_cluster" "jenkins" {
   name = var.ecs_cluster_name
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_ecs_task_definition" "jenkins" {
@@ -41,7 +45,7 @@ resource "aws_ecs_service" "jenkins" {
 
 resource "aws_autoscaling_group" "jenkins" {
   name = var.ecs_cluster_name
-   availability_zones        = ["${var.availability_zone}"]
+  availability_zones        = ["${var.availability_zone}"]
   min_size                  = var.min_instance_size
   max_size                  = var.max_instance_size
   desired_capacity          = var.desired_instance_capacity
@@ -77,9 +81,9 @@ resource "aws_launch_configuration" "jenkins" {
   security_groups             = ["${var.aws_security_group}"]
   iam_instance_profile        = var.aws_iam_instance_profile
   key_name                    = var.key_name
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   user_data                   = data.template_file.user_data.rendered
-
+  root_block_device.encrypted = true
   lifecycle {
     create_before_destroy = true
   }
@@ -88,8 +92,13 @@ resource "aws_launch_configuration" "jenkins" {
 resource "aws_cloudwatch_log_group" "mb" {
   name              = var.ecs_cluster_name
   retention_in_days = 14
+  kms_key_id        = aws_kms_key.jenkins.key_id
   tags = {
     Name        = var.ecs_cluster_name
     environment = var.environment
   }
+}
+
+resource "aws_kms_key" "jenkins" {
+  description             = "cloudwatch_encrpytion"
 }
