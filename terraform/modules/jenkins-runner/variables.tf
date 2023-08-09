@@ -18,3 +18,8 @@ variable "environment" {
   type = string
   description = "Environment to use"
 }
+
+variable "vpc_zone_identifier" {
+  type = string
+  description = "VPC ID"
+}

@@ -13,17 +13,6 @@ resource "aws_security_group" "jenkins_alb" {
     to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-#  egress {
-#    from_port   = 0
-#    protocol    = "-1"
-#    to_port     = 0
-#    cidr_blocks = ["0.0.0.0/0"]
-#  }
-
-  # tags = {
-  #   Name = "${var.service_name}-allow-http"
-  # }
 }
 
 resource "aws_alb" "jenkins" {

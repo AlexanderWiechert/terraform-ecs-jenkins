@@ -1,4 +1,5 @@
 resource "aws_security_group" "jenkins_runner" {
+  description = "Jenkins runner"
   name   = "jenkins_runner"
   vpc_id = aws_vpc.jenkins_runner.id
   tags   = var.baseTags
@@ -10,7 +11,7 @@ resource "aws_security_group_rule" "allow_ssh_incoming" {
   security_group_id = aws_security_group.jenkins_runner.id
   to_port = 22
   type = "ingress"
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = [var.vpc_zone_identifier]
 }
 
 resource "aws_security_group_rule" "allow_all_outgoing" {
