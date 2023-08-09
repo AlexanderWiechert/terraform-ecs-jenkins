@@ -1,0 +1,35 @@
+{
+  "_comment": "Create an AWS AMI to use with the project Jenkins",
+  "variables": {
+    "instance_type": "t3.medium"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "eu-central-1",
+      "profile": "kwh-bi-prod",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "amzn2-ami-hvm-2.*.*-x86_64-gp2",
+          "root-device-type": "ebs"
+        },
+        "most_recent": true,
+        "owners": ["amazon"]
+      },
+      "instance_type": "{{user `instance_type`}}",
+      "ssh_username": "ec2-user",
+      "ami_name": "jenkins-agent-{{isotime `2006-01-02 15_04_05`}}",
+      "ami_description": "jenkins build agent",
+      "tags": {
+        "Name": "Jenkins-agent"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "ansible-playbook.yaml"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+- name: Configure nameserver
+  become: yes
+  shell: |
+    bash -c "echo -e DNS1=8.8.8.8\\\nDNS2=9.9.9.9\\\nDNS3=$(tail -1 /etc/resolv.conf | awk '{print $2}') >> /etc/sysconfig/network-scripts/ifcfg-eth0"
+    bash -c "echo -e options timeout:2 attempts:5\\\nnameserver 8.8.8.8\\\nnameserver 9.9.9.9\\\nnameserver $(tail -1 /etc/resolv.conf | awk '{print $2}') > /etc/resolv.conf"

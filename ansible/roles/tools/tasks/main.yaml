@@ -1,0 +1,20 @@
+- name: Install Tools
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - bash-completion
+    - vim
+    - nano
+    - htop
+    - git
+    - jq
+    - python3
+    - python3-pip
+    - unzip
+
+- name: Install ansible
+  become: yes
+  shell: pip3 install ansible

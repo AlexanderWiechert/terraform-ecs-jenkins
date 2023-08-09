@@ -1,0 +1,4 @@
+region = "eu-central-1"
+bucket = "ACCOUNTID-terraform-state"
+key    = "jenkins/terraform.tfstate"
+role_arn = "arn:aws:iam::ACCOUNTID:role/G-Admin"

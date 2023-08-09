@@ -1,0 +1,11 @@
+- hosts: all
+  become: true
+  roles:
+    - tools
+    - time
+    - terraform
+    - aws
+    - docker
+    - dns
+    - jenkins
+    - java

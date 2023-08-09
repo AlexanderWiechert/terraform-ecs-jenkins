@@ -1,0 +1,16 @@
+- name: Install docker
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - docker
+- name: Start docker
+  become: true
+  shell: |
+    service docker start
+    systemctl enable docker.service
+    usermod -a -G docker ec2-user
+- name: Test docker
+  shell: docker ps

@@ -1,0 +1,66 @@
+#!groovy
+@Library('jenkinsPipelineLib@master') _
+import static de.elastic2ls.jenkinsPipelineLib.Release.*
+import de.elastic2ls.jenkinsPipelineLib.DeploymentCredentials
+
+pipeline {
+    agent any
+    options {
+        skipStagesAfterUnstable()
+        buildDiscarder(logRotator(numToKeepStr: '50'))
+        ansiColor('xterm')
+    }
+    environment {
+        AWS_REGION = "eu-central-1"
+        PROJECT_KEY = "devops"
+        PROJECT_PATH = "images/jenkins-agent"
+    }
+
+    stages {
+        stage('validate') {
+            steps {
+                setBuildDescription()
+                dir("$PROJECT_PATH"){
+                    packerValidateFor("prod")
+                }
+            }
+            post {
+                failure {
+                    rememberFailedStageName()
+                }
+            }
+        }
+        stage('Build and publish') {
+            when {
+                expression {
+                    return isProdRelease(env.GIT_BRANCH, params.ghprbPullId)
+                }
+            }
+            steps {
+                dir("$PROJECT_PATH"){
+                    packerBuildFor("prod")
+                }
+            }
+            post {
+                failure {
+                    rememberFailedStageName()
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                currentBuild.result = 'SUCCESS'
+            }
+        }
+
+        failure {
+            script {
+                currentBuild.result = 'FAILURE'
+            }
+            notifyFailure(params.mailTo, "https://github.com/elastic2ls/rules")
+        }
+    }
+}

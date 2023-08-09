@@ -1,0 +1,280 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - basicSSHUserPrivateKey:
+          description: "deployKey"
+          id: "deployKey"
+          privateKeySource:
+            directEntry:
+              privateKey: |
+                ...
+                -----END OPENSSH PRIVATE KEY-----
+          scope: GLOBAL
+      - aws:
+          accessKey: "${ACCESS_KEY_DEV}"
+          description: "AWS_ACCOUNT_ID_DEV"
+          id: "AWS_ACCOUNT_ID_DEV"
+          scope: GLOBAL
+          secretKey: "${SECRET_KEY_DEV}"
+      - aws:
+          accessKey: "${ACCESS_KEY_DNS}"
+          description: "AWS_ACCOUNT_ID_DNS"
+          id: "AWS_ACCOUNT_ID_DNS"
+          scope: GLOBAL
+          secretKey: "${SECRET_KEY_DNS}"
+      - string:
+          description: "SONARQUBE_SCANNER"
+          id: "SONAR"
+          scope: GLOBAL
+          secret: ACCESSTOKEN
+      - string:
+          description: "VAULT_PW_DEV"
+          id: "VAULT_PW_DEV"
+          scope: GLOBAL
+          secret: ACCESSTOKEN
+      - string:
+          description: "VAULT_PW_QA"
+          id: "VAULT_PW_QA"
+          scope: GLOBAL
+          secret: ACCESSTOKEN
+      - string:
+          description: "VAULT_PW_PROD"
+          id: "VAULT_PW_PROD"
+          scope: GLOBAL
+          secret: ACCESSTOKEN
+
+jenkins:
+  systemMessage: "Jenkins\n\n"
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  securityRealm: "keycloak"
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            pattern: ".*"
+            assignments:
+              - "some.admin"
+            permissions:
+              - "Job/Move"
+              - "Job/Build"
+              - "Lockable Resources/View"
+              - "Credentials/Delete"
+              - "Credentials/ManageDomains"
+              - "Lockable Resources/Unlock"
+              - "View/Create"
+              - "Agent/Configure"
+              - "Job/Read"
+              - "Credentials/Update"
+              - "Agent/Create"
+              - "Job/Delete"
+              - "Agent/Build"
+              - "View/Configure"
+              - "Lockable Resources/Reserve"
+              - "Agent/Provision"
+              - "SCM/Tag"
+              - "Job/Create"
+              - "Job/Discover"
+              - "Credentials/View"
+              - "Agent/Connect"
+              - "Agent/Delete"
+              - "Run/Replay"
+              - "Agent/Disconnect"
+              - "Run/Delete"
+              - "Job/Cancel"
+              - "Overall/Read"
+              - "Run/Update"
+              - "Credentials/Create"
+              - "Overall/Administer"
+              - "View/Delete"
+              - "Job/Configure"
+              - "Job/Workspace"
+              - "View/Read"
+              - "Job/ViewStatus"
+          - name: "developer"
+            pattern: ".*"
+            assignments:
+              - "some.developer"
+            permissions:
+              - "Job/Move"
+              - "Job/Build"
+              - "Lockable Resources/View"
+              - "Credentials/Delete"
+              - "Credentials/ManageDomains"
+              - "Lockable Resources/Unlock"
+              - "View/Create"
+              - "Agent/Configure"
+              - "Job/Read"
+              - "Credentials/Update"
+              - "Agent/Create"
+              - "Job/Delete"
+              - "Agent/Build"
+              - "View/Configure"
+              - "Lockable Resources/Reserve"
+              - "Agent/Provision"
+              - "SCM/Tag"
+              - "Job/Create"
+              - "Job/Discover"
+              - "Credentials/View"
+              - "Agent/Connect"
+              - "Agent/Delete"
+              - "Run/Replay"
+              - "Agent/Disconnect"
+              - "Run/Delete"
+              - "Job/Cancel"
+              - "Overall/Read"
+              - "Run/Update"
+              - "Credentials/Create"
+              - "Overall/Administer"
+              - "View/Delete"
+              - "Job/Configure"
+              - "Job/Workspace"
+              - "View/Read"
+              - "Job/ViewStatus"
+          - name: "Logged in users"
+            assignments:
+              - "authenticated"
+            pattern: "PROD\\-?.*"
+            permissions:
+              - "Job/Move"
+              - "Lockable Resources/View"
+              - "Job/Build"
+              - "Credentials/Delete"
+              - "Credentials/ManageDomains"
+              - "Lockable Resources/Unlock"
+              - "Job/Read"
+              - "Credentials/Update"
+              - "Job/Delete"
+              - "Lockable Resources/Reserve"
+              - "SCM/Tag"
+              - "Job/Create"
+              - "Job/Discover"
+              - "Credentials/View"
+              - "Run/Replay"
+              - "Run/Delete"
+              - "Job/Cancel"
+              - "Run/Update"
+              - "Credentials/Create"
+              - "Job/Configure"
+              - "Job/Workspace"
+              - "Job/ViewStatus"
+          - name: "Not Logged in Users"
+            assignments:
+              - "Anonymous"
+            pattern: ".*"
+            permissions: []
+  clouds:
+  - amazonEC2:
+      cloudName: "Jenkins_Slave"
+      credentialsId: "AWS_ACCOUNT_ID_DEV"
+      privateKey: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        ...
+        -----END RSA PRIVATE KEY-----
+      region: "eu-central-1"
+      templates:
+      - ami: "ami-07009c4c9b345c50d"
+        amiType:
+          unixData:
+            sshPort: "22"
+        associatePublicIp: true
+        connectBySSHProcess: true
+        connectionStrategy: PUBLIC_DNS
+        deleteRootOnTermination: false
+        description: "Jenkins_Slave_AMI"
+        ebsOptimized: true
+        hostKeyVerificationStrategy: OFF
+        idleTerminationMinutes: "15"
+        labelString: "jenkins-slave-docker"
+        maxTotalUses: -1
+        minimumNumberOfInstances: 0
+        minimumNumberOfSpareInstances: 0
+        mode: NORMAL
+        monitoring: false
+        numExecutors: 3
+        remoteAdmin: "ec2-user"
+        remoteFS: "/var/lib/jenkins"
+        securityGroups: "jenkins_runner"
+        stopOnTerminate: false
+        subnetId: "${subnet_id}"
+        t2Unlimited: false
+        type: T3Medium
+        useDedicatedTenancy: false
+        useEphemeralDevices: false
+      useInstanceProfileForCredentials: false
+      roleArn: ""
+      roleSessionName: ""
+      instanceCapStr: ""
+  labelAtoms:
+  - name: "jenkins-slave-docker"
+  - name: "master"
+  labelString: "master"
+  crumbIssuer:
+unclassified:
+  keycloakSecurityRealm:
+    keycloakJson: |-
+      {
+        "realm": "development-elastic2ls",
+        "auth-server-url": "https://keycloak.elastic2ls.com/auth/",
+        "ssl-required": "external",
+        "resource": "jenkins.elastic2ls.com",
+        "public-client": true,
+        "confidential-port": 0
+      }
+    keycloakRespectAccessTokenTimeout: true
+    keycloakValidate: false
+  location:
+    url: "https://jenkins.elastic2ls.com"
+    adminAddress: admin@example.com
+  globalLibraries:
+    libraries:
+    - defaultVersion: "master"
+      name: "sharedPipelineLib"
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              credentialsId: "deployKey"
+              id: "ACCESSTOKEN"
+              remote: "git@gitlab.elastic2ls.com:/sharedpipelinelib.git"
+tool:
+  git:
+    installations:
+    - home: "/usr/bin/git"
+      name: "Default"
+  terraform:
+    installations:
+    - home: "/usr/bin/terraform"
+      name: "Default"
+  gradle:
+    installations:
+    - home: "/opt/gradle-6.4.1/bin/gradle"
+      name: "Default"
+jobs:
+  - script: |
+      freeStyleJob("SeedJob") {
+          scm {
+              git {
+                  remote {
+                      name('origin')
+                      url('git@github.com:elastic2ls.com/product.git')
+                      credentials("deployKey")
+                  }
+                  branches('*/master')
+
+              }
+          }
+          triggers {
+              scm('H/5 * * * *')
+          }
+          steps {
+              dsl {
+                  external("jenkins/seedjob.groovy")
+                  removeAction('DELETE')
+                  removeViewAction('DELETE')
+              }
+          }
+      }

@@ -1,0 +1,14 @@
+- name: Install Terraform
+  become: true
+  shell: |
+    cd && wget https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip && unzip terraform_{{ terraform_version }}_linux_amd64.zip
+
+- name: Move terraform to $PATH
+  become: true
+  shell: |
+    mv /root/terraform /usr/local/bin/terraform
+
+- name: Set permissions for terraform
+  become: true
+  shell: |
+    chmod +x /usr/local/bin/terraform

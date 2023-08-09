@@ -1,0 +1,25 @@
+- name: Install Java JDK
+  become: true
+  yum:
+    name: java-11-amazon-corretto
+    state: present
+- name: setup java
+  shell: |
+    echo 1 | sudo alternatives --config java
+    echo 'export JAVA_HOME="/usr/lib/jvm/java-11-amazon-corretto.x86_64"' >> /etc/profile
+    echo 'PATH=/usr/lib/jvm/java-11-amazon-corretto.x86_64/bin:$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH' >> /etc/profile
+    source /etc/profile
+- name: test jre
+  shell: $JAVA_HOME/bin/java -version
+- name: test jdk
+  shell: $JAVA_HOME/bin/javac -version
+
+- name: Install Gradle
+  become: true
+  shell: |
+    cd /opt && wget https://services.gradle.org/distributions/gradle-{{ gradle_version }}-bin.zip && unzip gradle-{{ gradle_version }}-bin.zip
+
+- name: Add gradle script to global profile.d
+  become: true
+  shell: |
+    touch /etc/profile.d/gradle.sh && echo "export PATH=/opt/gradle-6.5/bin/:$PATH" > /etc/profile.d/gradle.sh

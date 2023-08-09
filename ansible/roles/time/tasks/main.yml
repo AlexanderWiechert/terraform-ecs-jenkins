@@ -1,0 +1,10 @@
+- name: Set timezone to Europe/Berlin
+  timezone:
+    name: Europe/Berlin
+
+- name: Install NTP
+  yum:
+    name: "{{ item }}"
+  loop:
+    - ntp
+    - ntpdate

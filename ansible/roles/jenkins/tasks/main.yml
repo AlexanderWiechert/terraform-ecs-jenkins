@@ -1,0 +1,7 @@
+- name: Create Jenkins workspace
+  file:
+    path: /var/lib/jenkins
+    owner: ec2-user
+    group: ec2-user
+    mode: '774'
+    state: directory

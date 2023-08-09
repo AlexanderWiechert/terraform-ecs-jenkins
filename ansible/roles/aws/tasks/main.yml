@@ -1,0 +1,17 @@
+- name: Install AWS CLI
+  become: true
+  yum:
+    state: present
+    name: awscli
+    update_cache: true
+- name: Configure AWS CLI
+  shell: |
+    aws configure set region eu-central-1
+    aws configure set output text
+- name: Install aws-iam-authenticator
+  become: yes
+  shell: |
+    curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+    chmod +x ./aws-iam-authenticator
+    mv ./aws-iam-authenticator /usr/bin
+    aws-iam-authenticator help

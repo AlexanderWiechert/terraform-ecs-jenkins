@@ -1,0 +1,6 @@
+profile                 = "default"
+profile_qa              = "profile_ACCOUNTID"
+dns_zone_holder_account = "profile_ACCOUNTID"
+region                  = "eu-central-1"
+dns_zone_name           = "elastic2ls.com"
+s3_bucket               = "ACCOUNTID-jenkins-state"
